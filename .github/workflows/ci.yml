@@ -1,0 +1,39 @@
+name: Continuous Integration (PR Main -> Prod)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - 'prod'
+
+jobs:
+  test:
+    name: Executar Testes Go
+    runs-on: ubuntu-latest
+
+    if: github.head_ref == 'main'
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.1'
+
+      - name: Cache de módulos Go
+        uses: actions/cache@v4
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Instalar dependências
+        run: go mod tidy
+
+      - name: Executar testes
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: go test ./...

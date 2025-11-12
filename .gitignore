@@ -30,3 +30,16 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# Diretório de trabalho local do Terraform
+.terraform/
+# Cache de plugins e módulos
+*.tfstate
+*.tfstate.*
+# Arquivo de bloqueio
+*.hcl
+# Arquivos de variáveis sensíveis
+*.tfvars
+*.tfvars.json
+# Logs
+crash.log

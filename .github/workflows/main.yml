@@ -55,4 +55,4 @@ jobs:
         containerAppName: ${{ env.CONTAINER_APP_NAME }}
         resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
         imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.DOCKER_IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-        secretValues: GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+        secretValues: google-api-key=${{ secrets.GOOGLE_API_KEY }}

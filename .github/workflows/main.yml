@@ -55,6 +55,4 @@ jobs:
         containerAppName: ${{ env.CONTAINER_APP_NAME }}
         resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
         imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.DOCKER_IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-        
-        # Injeta o valor do Secret do GitHub no Secret do ACA.
         secretValues: GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}

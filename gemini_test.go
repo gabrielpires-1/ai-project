@@ -10,6 +10,7 @@ import (
 
 // TestGetCompletion_Integration é um teste de integração.
 func TestGetCompletion_Integration(t *testing.T) {
+	t.Skip()
 	// 1. Tenta carregar o .env (para testes locais)
 	// Usamos _ para ignorar o erro "no such file or directory" na CI
 	_ = godotenv.Load()

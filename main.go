@@ -23,6 +23,8 @@ func main() {
 		log.Fatal("A variável de ambiente GOOGLE_API_KEY é obrigatória (defina no .env).")
 	}
 
+	log.Println("Valor da GOOGLE_API_KEY lido:", os.Getenv("GOOGLE_API_KEY"))
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080" // Porta padrão

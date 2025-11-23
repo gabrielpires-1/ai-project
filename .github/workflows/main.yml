@@ -48,9 +48,21 @@ jobs:
         tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.DOCKER_IMAGE_NAME }}:${{ env.IMAGE_TAG }}
         file: ${{ env.DOCKERFILE_PATH }}
 
-    # 4. 🚀 Deploy usando Azure CLI (Linha única para evitar erro de sintaxe)
+    # 4. 🚀 Deploy usando Azure CLI (Modo Seguro com Debug)
     - name: Deploy para Azure Container Apps
       uses: azure/cli@v2
       with:
         inlineScript: |
-          az containerapp update --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.DOCKER_IMAGE_NAME }}:${{ env.IMAGE_TAG }} --secrets google-api-key=${{ secrets.GOOGLE_API_KEY }}
+          echo "Iniciando deploy..."
+          # Se aparecer vazio abaixo, a secret não existe
+          echo "Target Resource Group: $AZURE_RESOURCE_GROUP" 
+          echo "Target App Name: $CONTAINER_APP_NAME"
+          
+          az containerapp update \
+            --name "$CONTAINER_APP_NAME" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --image "$AZURE_CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:$IMAGE_TAG" \
+            --secrets "google-api-key=$GOOGLE_API_KEY"
+      env:
+        # Passando explicitamente para garantir que entrem no container
+        GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}

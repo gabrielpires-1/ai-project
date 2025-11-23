@@ -48,11 +48,13 @@ jobs:
         tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.DOCKER_IMAGE_NAME }}:${{ env.IMAGE_TAG }}
         file: ${{ env.DOCKERFILE_PATH }}
 
-    # 4. 🚀 Deploy e Injeção de Secrets no Azure Container Apps (ACA)
-    - name: Deploy para o Azure Container Apps
-      uses: azure/container-apps-deploy-action@v1
+    # 4. 🚀 Deploy usando Azure CLI (Mais robusto e transparente)
+    - name: Deploy para Azure Container Apps
+      uses: azure/cli@v2
       with:
-        containerAppName: ${{ env.CONTAINER_APP_NAME }}
-        resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
-        imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.DOCKER_IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-        secretValues: google-api-key=${{ secrets.GOOGLE_API_KEY }}
+        inlineScript: |
+          az containerapp update \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.DOCKER_IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+            --secrets google-api-key=${{ secrets.GOOGLE_API_KEY }}

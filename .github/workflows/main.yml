@@ -48,23 +48,25 @@ jobs:
         tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.DOCKER_IMAGE_NAME }}:${{ env.IMAGE_TAG }}
         file: ${{ env.DOCKERFILE_PATH }}
 
-    # 4. 🚀 Deploy (Dividido em etapas para evitar erro de argumentos)
+    # 4. 🚀 Deploy Corrigido (Força a porta 8080 e atualiza a imagem)
     - name: Deploy para Azure Container Apps
       uses: azure/cli@v2
       with:
         inlineScript: |
-          # Passo A: Garante que a chave da API esteja atualizada no cofre do App
-          echo "Atualizando Secret (API Key)..."
+          echo "Verificando conexão com o App: $CONTAINER_APP_NAME"
+          
+          # 1. Atualiza a Secret primeiro
           az containerapp secret set \
             --name "$CONTAINER_APP_NAME" \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --secrets "google-api-key=$GOOGLE_API_KEY"
-          
-          # Passo B: Atualiza a imagem do container (O Deploy real)
-          echo "Atualizando Imagem..."
+
+          # 2. Atualiza a Imagem E corrige a porta (Ingress)
+          # O --ingress-target-port garante que o Azure saiba onde bater
           az containerapp update \
             --name "$CONTAINER_APP_NAME" \
             --resource-group "$AZURE_RESOURCE_GROUP" \
-            --image "$AZURE_CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:$IMAGE_TAG"
+            --image "$AZURE_CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:$IMAGE_TAG" \
+            --ingress-target-port 8080
       env:
         GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}

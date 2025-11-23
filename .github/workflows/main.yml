@@ -48,21 +48,23 @@ jobs:
         tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.DOCKER_IMAGE_NAME }}:${{ env.IMAGE_TAG }}
         file: ${{ env.DOCKERFILE_PATH }}
 
-    # 4. 🚀 Deploy usando Azure CLI (Modo Seguro com Debug)
+    # 4. 🚀 Deploy (Dividido em etapas para evitar erro de argumentos)
     - name: Deploy para Azure Container Apps
       uses: azure/cli@v2
       with:
         inlineScript: |
-          echo "Iniciando deploy..."
-          # Se aparecer vazio abaixo, a secret não existe
-          echo "Target Resource Group: $AZURE_RESOURCE_GROUP" 
-          echo "Target App Name: $CONTAINER_APP_NAME"
+          # Passo A: Garante que a chave da API esteja atualizada no cofre do App
+          echo "Atualizando Secret (API Key)..."
+          az containerapp secret set \
+            --name "$CONTAINER_APP_NAME" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --secrets "google-api-key=$GOOGLE_API_KEY"
           
+          # Passo B: Atualiza a imagem do container (O Deploy real)
+          echo "Atualizando Imagem..."
           az containerapp update \
             --name "$CONTAINER_APP_NAME" \
             --resource-group "$AZURE_RESOURCE_GROUP" \
-            --image "$AZURE_CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:$IMAGE_TAG" \
-            --secrets "google-api-key=$GOOGLE_API_KEY"
+            --image "$AZURE_CONTAINER_REGISTRY.azurecr.io/$DOCKER_IMAGE_NAME:$IMAGE_TAG"
       env:
-        # Passando explicitamente para garantir que entrem no container
         GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}

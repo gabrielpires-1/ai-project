@@ -83,6 +83,7 @@ resource "azurerm_container_app" "main" {
   # Configuração do Ingress (Endpoint Público)
   ingress {
     external_enabled = true  
+    # Balanceador de carga do Azure Container Apps vai enviar tráfego para a porta 8080 do container
     target_port      = 8080 
     
     traffic_weight {
